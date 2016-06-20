@@ -5,6 +5,7 @@
  */
 package souza.marlon.spring.data.mongodb.model;
 
+import java.math.BigInteger;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -16,11 +17,11 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Item {
     
     @Id
-    private Long id;
+    private BigInteger id;
     
     private String descricao;
 
-    public Long getId() {
+    public BigInteger getId() {
         return id;
     }
 
@@ -28,7 +29,7 @@ public class Item {
         return descricao;
     }
 
-    public void setId(Long id) {
+    public void setId(BigInteger id) {
         this.id = id;
     }
 

@@ -8,6 +8,7 @@ package souza.marlon.spring.data.mongodb.model;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import java.math.BigInteger;
 import java.util.List;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -22,17 +23,17 @@ import souza.marlon.spring.data.mongodb.json.FromJson;
 public class Pedido extends DocumentDB{
     
     @Id
-    private Long id;
+    private BigInteger id;
     
     private String cliente;
     
     private final List<Item> itens = Lists.newArrayList();
 
-    public Long getId() {
+    public BigInteger getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(BigInteger id) {
         this.id = id;
     }
 

@@ -20,6 +20,7 @@ public interface FromJson<T> {
         ImmutableBindMongo bindMongo = bindMongo();
         Preconditions.checkNotNull(bindMongo.json());
         Preconditions.checkNotNull(bindMongo.clazz());
+        
         return (T) new GsonBuilder().create().fromJson(bindMongo.json(), bindMongo.clazz());
     }
     

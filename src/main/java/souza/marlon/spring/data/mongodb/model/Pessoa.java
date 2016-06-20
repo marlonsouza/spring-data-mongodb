@@ -5,6 +5,7 @@
  */
 package souza.marlon.spring.data.mongodb.model;
 
+import java.math.BigInteger;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import souza.marlon.spring.data.mongodb.immutable.ImmutableBindMongo;
@@ -18,15 +19,15 @@ import souza.marlon.spring.data.mongodb.json.FromJson;
 public class Pessoa extends DocumentDB{
     
     @Id
-    private Long id;
+    private BigInteger id;
     
     private String nome;
 
-    public Long getId() {
+    public BigInteger getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(BigInteger id) {
         this.id = id;
     }
 

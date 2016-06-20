@@ -7,13 +7,13 @@ package souza.marlon.spring.data.mongodb.repository;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.mongodb.client.MongoDatabase;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.bson.Document;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 import souza.marlon.spring.data.mongodb.immutable.ImmutableBindMongo;
 import souza.marlon.spring.data.mongodb.json.FromJson;
@@ -25,40 +25,32 @@ import souza.marlon.spring.data.mongodb.model.DocumentDB;
  */
 @Component
 public class MongoRepository {
+    
+    @Autowired
+    private MongoOperations mongoOperations;
 
     private static final String NAME_CLASS = "nameClass";
 
     public void insert(DocumentDB toPersist) {
-
-        MongoDatabase mongoDatabase = MongoConnection.getConnection();
-        final String simpleName = toPersist.getClass().getSimpleName();
-
-        if (mongoDatabase.getCollection(simpleName) == null) {
-            mongoDatabase.createCollection(simpleName);
-        }
-
-        Document jsonToInsert = Document.parse(toPersist.toJson().go());
-
-        mongoDatabase.getCollection(simpleName).insertOne(jsonToInsert);
-
+        Preconditions.checkNotNull(toPersist);
+        
+        mongoOperations.save(toPersist);
+        
     }
 
     public void deleteAll(Class clazz) {
         Preconditions.checkNotNull(clazz);
-        MongoDatabase mongoDatabase = MongoConnection.getConnection();
-        final String simpleName = clazz.getSimpleName();
-        mongoDatabase.getCollection(simpleName).drop();
+        mongoOperations.remove(new Query(), clazz);
     }
 
     public List<DocumentDB> listAll() {
-        MongoDatabase mongoDatabase = MongoConnection.getConnection();
 
         List<DocumentDB> result = Lists.newArrayList();
 
-        mongoDatabase.listCollectionNames().forEach((Consumer<String>) n -> {
-            mongoDatabase.getCollection(n).find().forEach((Consumer<Document>) (Document i) -> {
-                final String nameClass = i.getString(NAME_CLASS);
-
+        mongoOperations.getCollectionNames().forEach(n -> {
+            mongoOperations.getCollection(n).find().forEach(i ->{
+                final String nameClass = (String) i.get(NAME_CLASS);
+                
                 Optional.ofNullable(nameClass)
                     .ifPresent((String name) -> {
                         Class<?> clazz = null;
@@ -69,13 +61,13 @@ public class MongoRepository {
                             Logger.getLogger(MongoRepository.class.getName()).log(Level.SEVERE, null, ex);
                         }
 
-                        FromJson fromJson = (FromJson) ImmutableBindMongo.builder().clazz(clazz).json(i.toJson())::build;
+                        FromJson fromJson = (FromJson) ImmutableBindMongo.builder().clazz(clazz).json(i.toString())::build;
 
                         result.add((DocumentDB) fromJson.go());
                     });
             });
         });
-
+        
         return result;
     }
 
